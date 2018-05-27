@@ -11,7 +11,7 @@ public class Node {
     HashMap<Character, Node> next = new HashMap<>();
     int availableTerminals = 0;
     boolean isTerminal = false;
-    private final String delim = "\t";
+    private final String delim = ""\"!zxcvma;adfg!poosibility_of_apperiance_of_this_occurency_very_smal_toozll1345dasf\;";
     Node(){ }
     Node(String source, Queue<Node> queue) {
         String[] sourceNode = source.split(delim);
