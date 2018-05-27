@@ -58,7 +58,6 @@ public class TrieImplTest {
         for (int i = 0; i < testSize; i++) {
             assertFalse(trieImpl.contains(vocabular[i]));
         }
-
     }
     private int triviaPrefix(String[] vocabular, String prefix){
         int ans = 0;
@@ -121,7 +120,6 @@ public class TrieImplTest {
         trieImpl.remove("a");
         assertTrue(trieImpl.size() == 1);
     }
-
     @Test
     public void trieSpecificTest2() {
         TrieImpl trieImpl = new TrieImpl();
@@ -140,11 +138,9 @@ public class TrieImplTest {
         assertTrue(trieImpl.remove("a"));
         assertFalse(trieImpl.remove("a"));
     }
-
     @Test
     public void testSerialize()
     {
-
         TrieImpl trieImpl = new TrieImpl();
         trieImpl.add("abc");
         trieImpl.add("abra");
@@ -153,23 +149,20 @@ public class TrieImplTest {
         try {
             trieImpl.serialize(outputStream);
         }
-        catch (IOException e)
-        {
+        catch (IOException e) {
             System.out.println("IOException in serialize");
         }
         ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
         try {
             trieImpl.deserialize(inputStream);
         }
-        catch (IOException e)
-        {
+        catch (IOException e) {
             System.out.println("IOException in deserialize");
         }
         assertEquals(trieImpl.contains("abc"), true);
         assertEquals(trieImpl.contains("bac"), true);
         assertEquals(trieImpl.contains("abra"), true);
         assertEquals(trieImpl.size(), 3);
-
     }
     @Test
     public void testSerializeBig()
@@ -189,16 +182,14 @@ public class TrieImplTest {
         try {
             trieImpl.serialize(outputStream);
         }
-        catch (IOException e)
-        {
+        catch (IOException e) {
             System.out.println("IOException in serialize");
         }
         ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
         try {
             trieImpl.deserialize(inputStream);
         }
-        catch (IOException e)
-        {
+        catch (IOException e) {
             System.out.println("IOException in deserialize");
         }
 
@@ -214,7 +205,6 @@ public class TrieImplTest {
         for (int i = 0; i < testSize; i++) {
             assertTrue(trieImpl.contains(vocabular[i]));
         }
-
     }
     @Test
     public void nodeToString()

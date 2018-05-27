@@ -6,79 +6,60 @@ import java.util.LinkedList;
 
 public class TrieImpl implements Trie, StreamSerializable {
     private Node root = new Node();
-
-    @Override
-    public String toString() {
+    private String rendered = null;
+    private final String delim = "\n";
+    private String render() {
         StringBuilder answerString = new StringBuilder();
         LinkedList<Node> queue = new LinkedList<>();
-        queue.add(root);
-        while (queue.size() != 0)
-        {
-            Node currentNode = queue.getFirst();
-            queue.removeFirst();
-            answerString.append(currentNode.toString());
-            Object keys[] = currentNode.next.keySet().toArray();
+        queue.offer(root);
+        while (!queue.isEmpty()) {
+            Node currentNode = queue.poll();
+            answerString.append(delim).
+                    append(currentNode.toString());
+            Object[] keys = currentNode.next.keySet().toArray();
             Arrays.sort(keys);
-            for (Object c :
-                    keys) {
+            for (Object c : keys) {
                 queue.add(currentNode.next.get(c));
             }
         }
         return answerString.toString();
     }
-
+    @Override
+    public String toString() {
+        if (rendered == null) {
+            rendered = render();
+        }
+        return rendered;
+    }
     public void serialize(OutputStream out) throws IOException {
         DataOutputStream dos = new DataOutputStream(out);
-        dos.writeChars(this.toString());
+        dos.writeUTF(this.toString());
     }
-
     private void fromString(String source){
+        /*Процесс обратный созданию строки. Собираем бор начиная с листьев бора.
+          Так как у листьев нет ссылок, то они ничего не берут из очереди, а только кладут сами себя.
+          Вершины же не листья будут вытаскивать вершины и класть себя. Порядок гарантируется тем, что
+          при формирования строки был использован bfs.*/
         LinkedList<Node> queue = new LinkedList<>();
-        String sourceForNodes[] = source.split(";");
-
-        for(int i = sourceForNodes.length - 1; i > 0; --i)
-        {
-
-            String sourceNode[] = sourceForNodes[i].split(":");
-            Node curNode = new Node();
-            curNode.isTerminal = Boolean.parseBoolean(sourceNode[0]);
-            curNode.availableTerminals = Integer.parseInt(sourceNode[1]);
-            if (sourceNode.length > 2) {
-                for (int key = sourceNode[2].length() - 1; key >= 0; --key) {
-                    curNode.next.put(sourceNode[2].charAt(key), queue.getFirst());
-                    queue.removeFirst();
-                }
-            }
-            queue.add(curNode);
-
+        String[] sourceForNodes = source.split(delim);
+        for(int i = sourceForNodes.length - 1; i > 0; --i) {
+            Node curNode = new Node(sourceForNodes[i], queue);
+            queue.offer(curNode);
         }
-        root = queue.getFirst();
+        root = queue.peek();
     }
-
     public void deserialize(InputStream in) throws IOException {
         DataInputStream dis = new DataInputStream(in);
-        char c;
-        StringBuilder inputStringBuilder = new StringBuilder();
-        try {
-            while (true) {
-
-                c = dis.readChar();
-                inputStringBuilder.append(c);
-            }
-        } catch (EOFException e){
-
-        }
-        String inputString = inputStringBuilder.toString();
+        String inputString = dis.readUTF();
         fromString(inputString);
     }
-    public boolean add (String element)
-    {
+    public boolean add (String element) {
+        rendered = null;
         if (!this.contains(element)) {
             Node current = root;
             for (int index = 0; index < element.length(); ++index) {
                 Node next = current.next.get(element.charAt(index));
-                if (next == null)
-                {
+                if (next == null) {
                     next = new Node();
                     current.next.put(element.charAt(index), next);
                 }
@@ -93,17 +74,15 @@ public class TrieImpl implements Trie, StreamSerializable {
             return false;
         }
     }
-    public boolean remove (String element)
-    {
+    public boolean remove (String element) {
+        rendered = null;
         if (this.contains(element)){
             Node current = root;
             root.availableTerminals--;
             for (int index = 0; index < element.length(); ++index) {
                 Node next = current.next.get(element.charAt(index));
-
                 next.availableTerminals--;
-                if (next.availableTerminals == 0)
-                {
+                if (next.availableTerminals == 0) {
                     current.next.remove(element.charAt(index));
                     return true;
                 }
@@ -114,8 +93,7 @@ public class TrieImpl implements Trie, StreamSerializable {
         }
         return false;
     }
-    public boolean contains (String element)
-    {
+    public boolean contains (String element) {
         Node current = root;
         for (int index = 0; index < element.length(); ++index) {
             current = current.next.get(element.charAt(index));
@@ -129,15 +107,14 @@ public class TrieImpl implements Trie, StreamSerializable {
     {
         return root.availableTerminals;
     }
-    public int howManyStartsWithPrefix(String prefix)
-    {
+    public int howManyStartsWithPrefix(String prefix) {
         Node current = root;
         for (int index = 0; index < prefix.length(); ++index) {
             current = current.next.get(prefix.charAt(index));
-            if (current == null)
+            if (current == null) {
                 return 0;
+            }
         }
         return current.availableTerminals;
     }
-
 }
