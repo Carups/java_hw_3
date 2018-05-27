@@ -7,7 +7,7 @@ import java.util.LinkedList;
 public class TrieImpl implements Trie, StreamSerializable {
     private Node root = new Node();
     private String rendered = null;
-    private final String delim = "\n";
+    private final String delim = ""\"!zxcvma;adfg!poosibility_of_apperiance_of_this_occurency_very_smalzll1345dasf\";"";
     private String render() {
         StringBuilder answerString = new StringBuilder();
         LinkedList<Node> queue = new LinkedList<>();
